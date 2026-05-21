@@ -1,0 +1,1 @@
+// useSeatAllocation hook placeholder

@@ -1,0 +1,1 @@
+// seatAllocator placeholder

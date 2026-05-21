@@ -1,70 +1,78 @@
-# Getting Started with Create React App
+# bugbounty-hackathon
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+BugBounty Hackathon is a modern hackathon platform built with React, TypeScript, Vite, Tailwind CSS, and Supabase. It includes a polished marketing site, Supabase-backed authentication, a live dashboard, and database-driven workflow screens for teams, problems, announcements, submissions, and seat allocation.
+
+## Tech Stack
+
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- Framer Motion
+- Lucide React
+- React Router
+- Supabase Auth + Database
+
+## What Is Implemented
+
+- Marketing landing experience with custom sections and responsive UI
+- Real Supabase authentication for login, registration, and password reset
+- Email verification flow with resend support
+- Session-aware route protection
+- Dashboard that reads from Supabase instead of mock data
+- Team management, member management, problem selection, announcements, and submissions UI
+- Supabase SQL bootstrap script for creating the database schema
+
+## Project Structure
+
+- `src/pages/marketing` - public landing and informational pages
+- `src/pages/auth` - login, register, verification, and password reset screens
+- `src/pages/dashboard` - authenticated dashboard views
+- `src/pages/admin` - admin-oriented management pages
+- `src/supabase` - Supabase client, auth helpers, database helpers, queries, and realtime hooks
+- `src/context` - global auth state
+- `src/routes` - route definitions and guards
+- `supabase/schema.sql` - SQL script to create the required tables in Supabase
+
+## Environment Setup
+
+Create a `.env` file in the project root and add your Supabase credentials:
+
+```bash
+VITE_SUPABASE_URL=your-supabase-project-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+## Supabase Database Setup
+
+1. Open your Supabase project.
+2. Go to the SQL editor.
+3. Run the file at [supabase/schema.sql](supabase/schema.sql).
+4. Make sure email authentication is enabled in Supabase Auth.
+5. If you want email confirmation to be required, keep it enabled in the Supabase dashboard.
 
 ## Available Scripts
 
-In the project directory, you can run:
+```bash
+npm run dev
+npm run build
+npm run preview
+npm run format
+```
 
-### `npm start`
+## Development
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm install
+npm run dev
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Notes
 
-### `npm test`
+- Authentication is real and handled by Supabase, not mocked in the frontend.
+- The dashboard now resolves the current team from the authenticated user profile and falls back to Supabase lookups when needed.
+- Resend and reset email flows use local cooldown protection to reduce repeated requests and avoid rate-limit errors.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Status
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The application is currently in an active build-out phase, with the core marketing, auth, and dashboard foundations in place and connected to Supabase.
