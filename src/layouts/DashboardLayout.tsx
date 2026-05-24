@@ -1,39 +1,22 @@
 import React, { useState } from 'react'
-import { Outlet, Link, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import {
 	LayoutDashboard,
 	Users,
 	ShieldCheck,
-	MapPinned,
 	Megaphone,
 	FileUp,
+	Shield,
 	Menu,
 	Bell,
 	Search,
-	ChevronRight,
 	LogOut,
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 
 type IconType = React.ElementType
 
-const navItems: Array<{ id: string; label: string; icon: IconType }> = [
-	{ id: 'overview', label: 'Overview', icon: LayoutDashboard },
-	{ id: 'team', label: 'Team', icon: Users },
-	{ id: 'problems', label: 'Problems', icon: ShieldCheck },
-	{ id: 'seating', label: 'Seat Allocation', icon: MapPinned },
-	{ id: 'announcements', label: 'Announcements', icon: Megaphone },
-	{ id: 'submission', label: 'Submission', icon: FileUp },
-]
-
 const el: any = React.createElement
-
-function scrollToSection(id: string) {
-	const element = document.getElementById(id)
-	if (element) {
-		element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-	}
-}
 
 export default function DashboardLayout() {
 	const [mobileOpen, setMobileOpen] = useState(false)
@@ -41,6 +24,14 @@ export default function DashboardLayout() {
 	const { profile, role, signOut } = useAuth()
 	const displayName = profile?.email ? profile.email.split('@')[0] : 'Aman Leader'
 	const displayRole = role ? role.toUpperCase() : 'STUDENT'
+	const navItems: Array<{ id: string; label: string; icon: IconType }> = [
+		{ id: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+		...(role === 'leader' || role === 'admin' ? [{ id: '/dashboard/team', label: 'Team', icon: Users }] : []),
+		{ id: '/dashboard/problems', label: 'Problems', icon: ShieldCheck },
+		{ id: '/dashboard/announcements', label: 'Announcements', icon: Megaphone },
+		...(role === 'leader' ? [{ id: '/dashboard/submission', label: 'Submission', icon: FileUp }] : []),
+		...(role === 'admin' ? [{ id: '/dashboard/admin', label: 'Admin', icon: Shield }] : []),
+	]
 
 	const handleSignOut = async () => {
 		await signOut()
@@ -57,8 +48,8 @@ export default function DashboardLayout() {
 			el(
 				'div',
 				null,
-				el('div', { className: 'text-lg font-bold text-text-900' }, 'Hackathon Hub'),
-				el('div', { className: 'text-xs uppercase tracking-[0.28em] text-text-500' }, 'Student Dashboard'),
+						el('div', { className: 'text-lg font-bold text-text-900' }, 'Hackathon Hub'),
+						el('div', { className: 'text-xs uppercase tracking-[0.28em] text-text-500' }, 'Role Dashboard'),
 			),
 		),
 		el(
@@ -72,7 +63,7 @@ export default function DashboardLayout() {
 					'div',
 					null,
 						el('div', { className: 'text-sm font-semibold text-text-900' }, displayRole),
-						el('div', { className: 'text-xs text-text-500' }, 'Team leader access'),
+						el('div', { className: 'text-xs text-text-500' }, role === 'admin' ? 'Admin access' : role === 'leader' ? 'Team leader access' : 'Member access'),
 				),
 				el('span', { className: 'rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary' }, 'Live'),
 			),
@@ -83,14 +74,13 @@ export default function DashboardLayout() {
 			navItems.map((item) => {
 				const Icon = item.icon
 				return el(
-					'button',
+					NavLink,
 					{
 						key: item.id,
-						onClick: () => scrollToSection(item.id),
-						className: 'flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-medium text-text-500 transition-colors hover:bg-white/5 hover:text-text-900',
+						to: item.id,
+						className: ({ isActive }: { isActive: boolean }) => `flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-medium transition-colors ${isActive ? 'bg-primary/10 text-primary' : 'text-text-500 hover:bg-white/5 hover:text-text-900'}`,
 					},
 					el('span', { className: 'flex items-center gap-3' }, el(Icon, { className: 'h-4 w-4' }), item.label),
-					el(ChevronRight, { className: 'h-4 w-4' }),
 				)
 			}),
 		),
@@ -98,7 +88,7 @@ export default function DashboardLayout() {
 			'div',
 			{ className: 'mt-auto rounded-3xl border border-white/10 bg-gradient-to-br from-white/8 to-white/3 p-4' },
 			el('div', { className: 'text-sm font-semibold text-text-900' }, 'Leader Console'),
-			el('p', { className: 'mt-2 text-sm text-text-500' }, 'Create your team, unlock the hidden code, and claim a problem statement before other teams.'),
+			el('p', { className: 'mt-2 text-sm text-text-500' }, role === 'leader' ? 'Create your team, unlock the hidden code, and claim a problem statement before other teams.' : role === 'admin' ? 'Manage rooms, problems, teams, and overrides from the admin panel.' : 'View your assigned problem and announcements.'),
 			el(Link, { to: '/', className: 'mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-white' }, 'Back to marketing'),
 		),
 	)
@@ -114,7 +104,7 @@ export default function DashboardLayout() {
 				'div',
 				{ className: 'flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3' },
 				el(Search, { className: 'h-4 w-4 shrink-0 text-text-500' }),
-				el('input', { type: 'text', placeholder: 'Search team, problem, announcement...', className: 'w-full bg-transparent text-sm text-text-900 placeholder:text-text-500 focus:outline-none' }),
+				el('input', { type: 'text', placeholder: 'Search dashboard...', className: 'w-full bg-transparent text-sm text-text-900 placeholder:text-text-500 focus:outline-none' }),
 			),
 			el('button', { className: 'hidden sm:inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-text-900' }, el(Bell, { className: 'h-4 w-4' }), 'Alerts'),
 			el(
@@ -148,20 +138,20 @@ export default function DashboardLayout() {
 				el(navItems.map((item) => {
 					const Icon = item.icon
 					return el(
-						'button',
+						NavLink,
 						{
 							key: item.id,
+							to: item.id,
+							className: ({ isActive }: { isActive: boolean }) => `flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-medium ${isActive ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 bg-white/5 text-text-900'}`,
 							onClick: () => {
-								scrollToSection(item.id)
 								setMobileOpen(false)
 							},
-							className: 'flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-medium text-text-900',
 						},
 						el(Icon, { className: 'h-4 w-4 text-primary' }),
 						item.label,
 					)
 				})),
-				el('div', { className: 'mt-auto rounded-3xl border border-white/10 bg-white/5 p-4 text-sm text-text-500' }, 'Role-based navigation will expand here for coordinator and HOI views.'),
+				el('div', { className: 'mt-auto rounded-3xl border border-white/10 bg-white/5 p-4 text-sm text-text-500' }, role === 'admin' ? 'Admin controls live here.' : 'Role-based navigation updated for the current account.'),
 			),
 		)
 		: null

@@ -1,7 +1,7 @@
 import { supabase } from './client'
 import type { User } from '@supabase/supabase-js'
 
-export type UserRole = 'student' | 'coordinator' | 'faculty' | 'hoi'
+export type UserRole = 'leader' | 'member' | 'admin'
 
 export type UserRow = {
 	id: string
@@ -21,6 +21,7 @@ export type TeamRow = {
 	id: string
 	team_name: string
 	leader_id: string
+	hidden_code: string | null
 	room_id: string | null
 	seat_number: string | null
 	problem_id: string | null
@@ -31,6 +32,7 @@ export type TeamRow = {
 export type TeamMemberRow = {
 	id: string
 	team_id: string
+	user_id?: string | null
 	name: string
 	email: string
 	created_at?: string
@@ -79,10 +81,10 @@ export type ProfileRow = UserRow
 
 function resolveRole(user: User): UserRole {
 	const role = user.user_metadata?.role
-	if (role === 'coordinator' || role === 'faculty' || role === 'hoi') {
+	if (role === 'leader' || role === 'member' || role === 'admin') {
 		return role
 	}
-	return 'student'
+	return 'member'
 }
 
 export function mapSupabaseUserToUserRow(user: User, teamName?: string): UserRow {
@@ -92,7 +94,7 @@ export function mapSupabaseUserToUserRow(user: User, teamName?: string): UserRow
 		email: user.email ?? '',
 		role: resolveRole(user),
 		team_name: teamName ?? String(user.user_metadata?.team_name ?? ''),
-		team_id: teamName ? teamName : (user.user_metadata?.team_id as string | undefined) ?? null,
+		team_id: (user.user_metadata?.team_id as string | undefined) ?? null,
 		hidden_code: (user.user_metadata?.hidden_code as string | undefined) ?? null,
 		seat_id: (user.user_metadata?.seat_id as string | undefined) ?? null,
 		selected_problem: (user.user_metadata?.selected_problem as string | undefined) ?? null,

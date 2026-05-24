@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
-import { signInWithEmail, syncProfileFromAuth, ensureTeamForUser } from '../../supabase/auth'
+import { signInWithEmail } from '../../supabase/auth'
 
 function isEmailNotConfirmedError(message: string) {
   return message.toLowerCase().includes('email not confirmed') || message.toLowerCase().includes('email not verified')
@@ -34,25 +34,9 @@ export default function LoginPage() {
     }
 
     if (data.session) {
-      if (data.user) {
-        const { error: profileError } = await syncProfileFromAuth(data.user)
-        if (profileError) {
-          setLoading(false)
-          setError(profileError.message)
-          return
-        }
-
-        try {
-          await ensureTeamForUser(data.user)
-        } catch (teamError) {
-          setLoading(false)
-          setError(teamError instanceof Error ? teamError.message : 'Unable to prepare your team record')
-          return
-        }
-      }
-
+      const role = data.session.user.user_metadata?.role === 'admin' || data.session.user.app_metadata?.role === 'admin' ? 'admin' : data.session.user.user_metadata?.role === 'leader' || data.session.user.app_metadata?.role === 'leader' ? 'leader' : 'member'
       setLoading(false)
-      navigate('/dashboard')
+      navigate(role === 'admin' ? '/dashboard/admin' : '/dashboard')
       return
     }
 

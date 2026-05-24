@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '../supabase/client'
-import { getCurrentSession, signOutUser, syncProfileFromAuth } from '../supabase/auth'
+import { completePendingOnboarding, getCurrentSession, signOutUser, syncProfileFromAuth } from '../supabase/auth'
 import { getProfileById, type ProfileRow, type UserRole } from '../supabase/database'
 
 type AuthContextValue = {
@@ -18,11 +18,11 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 function resolveRole(user: User | null): UserRole {
-	const role = user?.user_metadata?.role
-	if (role === 'coordinator' || role === 'faculty' || role === 'hoi') {
+	const role = user?.user_metadata?.role ?? user?.app_metadata?.role
+	if (role === 'leader' || role === 'member' || role === 'admin') {
 		return role
 	}
-	return 'student'
+	return 'member'
 }
 
 function deriveProfile(user: User | null): ProfileRow | null {
@@ -43,6 +43,7 @@ async function loadProfile(user: User | null): Promise<ProfileRow | null> {
 
 	try {
 		await syncProfileFromAuth(user, fallbackProfile?.team_name)
+		await completePendingOnboarding(user)
 		const { data } = await getProfileById(user.id)
 		if (data) {
 			return data as ProfileRow

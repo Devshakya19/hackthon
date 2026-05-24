@@ -7,6 +7,18 @@ import ForgotPassword from '../pages/auth/ForgotPassword'
 import VerifyEmail from '../pages/auth/VerifyEmail'
 import DashboardLayout from '../layouts/DashboardLayout'
 import DashboardHome from '../pages/dashboard/DashboardHome'
+import TeamPage from '../pages/dashboard/TeamPage'
+import ProblemStatements from '../pages/dashboard/ProblemStatements'
+import Announcements from '../pages/dashboard/Announcements'
+import SubmissionPage from '../pages/dashboard/SubmissionPage'
+import AdminDashboard from '../pages/admin/AdminDashboard'
+import ManageRooms from '../pages/admin/ManageRooms'
+import ManageProblems from '../pages/admin/ManageProblems'
+import ManageTeams from '../pages/admin/ManageTeams'
+import ManageAnnouncements from '../pages/admin/ManageAnnouncements'
+import SeatManager from '../pages/admin/SeatManager'
+import JudgingPanel from '../pages/admin/JudgingPanel'
+import EmergencyControls from '../pages/admin/EmergencyControls'
 import { useAuth } from '../hooks/useAuth'
 
 function LoadingGate() {
@@ -26,11 +38,26 @@ function ProtectedRoute() {
 }
 
 function PublicRoute() {
-	const { loading, isAuthenticated } = useAuth()
+  const { loading, isAuthenticated, role } = useAuth()
 
 	if (loading) return <LoadingGate />
-	if (isAuthenticated) return <Navigate to="/dashboard" replace />
+  if (isAuthenticated) return <Navigate to={role === 'admin' ? '/dashboard/admin' : '/dashboard'} replace />
 	return <Outlet />
+}
+
+function DashboardEntry() {
+  const { role } = useAuth()
+
+  if (role === 'admin') return <Navigate to="admin" replace />
+  return <DashboardHome />
+}
+
+function RequireRole({ allowedRoles }: { allowedRoles: Array<'leader' | 'member' | 'admin'> }) {
+  const { loading, role } = useAuth()
+
+  if (loading) return <LoadingGate />
+  if (!allowedRoles.includes(role)) return <Navigate to="/dashboard" replace />
+  return <Outlet />
 }
 
 export default function AppRoutes() {
@@ -47,7 +74,21 @@ export default function AppRoutes() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<DashboardHome />} />
+          <Route index element={<DashboardEntry />} />
+          <Route path="team" element={<TeamPage />} />
+          <Route path="problems" element={<ProblemStatements />} />
+          <Route path="announcements" element={<Announcements />} />
+          <Route path="submission" element={<SubmissionPage />} />
+          <Route element={<RequireRole allowedRoles={['admin']} />}>
+            <Route path="admin" element={<AdminDashboard />} />
+            <Route path="admin/rooms" element={<ManageRooms />} />
+            <Route path="admin/problems" element={<ManageProblems />} />
+            <Route path="admin/teams" element={<ManageTeams />} />
+            <Route path="admin/announcements" element={<ManageAnnouncements />} />
+            <Route path="admin/seating" element={<SeatManager />} />
+            <Route path="admin/judging" element={<JudgingPanel />} />
+            <Route path="admin/emergency" element={<EmergencyControls />} />
+          </Route>
         </Route>
       </Route>
 

@@ -33,6 +33,10 @@ export async function getTeamByLeaderId(leaderId: string) {
 	return supabase.from('teams').select('*').eq('leader_id', leaderId).maybeSingle()
 }
 
+export async function getTeamByHiddenCode(hiddenCode: string) {
+	return supabase.from('teams').select('*').eq('hidden_code', hiddenCode).maybeSingle()
+}
+
 export async function updateTeam(teamId: string, values: Partial<TeamRow>) {
 	return supabase.from('teams').update(values).eq('id', teamId)
 }
@@ -47,6 +51,10 @@ export async function addTeamMember(member: TeamMemberRow) {
 
 export async function createTeamMember(member: TeamMemberRow) {
 	return supabase.from('team_members').insert(member)
+}
+
+export async function getTeamMemberByUserId(userId: string) {
+	return supabase.from('team_members').select('*').eq('user_id', userId).maybeSingle()
 }
 
 export async function updateTeamMember(memberId: string, values: Partial<TeamMemberRow>) {
@@ -85,6 +93,18 @@ export async function listRooms() {
 	return supabase.from('rooms').select('*').order('block', { ascending: true }).order('room_number', { ascending: true })
 }
 
+export async function createRoom(room: RoomRow) {
+	return supabase.from('rooms').insert(room)
+}
+
+export async function updateRoom(roomId: string, values: Partial<RoomRow>) {
+	return supabase.from('rooms').update(values).eq('id', roomId)
+}
+
+export async function removeRoom(roomId: string) {
+	return supabase.from('rooms').delete().eq('id', roomId)
+}
+
 export async function listAnnouncements() {
 	return supabase.from('announcements').select('*').order('created_at', { ascending: false })
 }
@@ -93,8 +113,48 @@ export async function createAnnouncement(announcement: AnnouncementRow) {
 	return supabase.from('announcements').insert(announcement)
 }
 
+export async function updateAnnouncement(announcementId: string, values: Partial<AnnouncementRow>) {
+	return supabase.from('announcements').update(values).eq('id', announcementId)
+}
+
+export async function removeAnnouncement(announcementId: string) {
+	return supabase.from('announcements').delete().eq('id', announcementId)
+}
+
+export async function createProblem(problem: ProblemRow) {
+	return supabase.from('problems').insert(problem)
+}
+
+export async function updateProblem(problemId: string, values: Partial<ProblemRow>) {
+	return supabase.from('problems').update(values).eq('id', problemId)
+}
+
+export async function removeProblem(problemId: string) {
+	return supabase.from('problems').delete().eq('id', problemId)
+}
+
+export async function listTeams() {
+	return supabase.from('teams').select('*').order('created_at', { ascending: false })
+}
+
+export async function removeTeam(teamId: string) {
+	return supabase.from('teams').delete().eq('id', teamId)
+}
+
+export async function listAllTeamMembers() {
+	return supabase.from('team_members').select('*').order('created_at', { ascending: false })
+}
+
+export async function deleteTeamMemberByUserId(userId: string) {
+	return supabase.from('team_members').delete().eq('user_id', userId)
+}
+
 export async function listSubmissions(teamId: string) {
 	return supabase.from('submissions').select('*').eq('team_id', teamId).order('created_at', { ascending: false })
+}
+
+export async function getSubmissionsByTeam(teamId: string) {
+	return listSubmissions(teamId)
 }
 
 export async function createSubmission(submission: SubmissionRow) {
@@ -103,4 +163,17 @@ export async function createSubmission(submission: SubmissionRow) {
 
 export async function updateSeatAllocation(userId: string, seatId: string, hiddenCode?: string, selectedProblem?: string) {
 	return supabase.from('users').update({ seat_id: seatId, hidden_code: hiddenCode ?? null, selected_problem: selectedProblem ?? null }).eq('id', userId)
+}
+
+export async function releaseExpiredProblemLocks() {
+	const nowIso = new Date().toISOString()
+	return supabase
+		.from('problems')
+		.update({ status: 'available', locked_by: null, locked_until: null })
+		.eq('status', 'locked')
+		.lt('locked_until', nowIso)
+}
+
+export async function clearAllProblemLocks() {
+	return supabase.from('problems').update({ status: 'available', locked_by: null, assigned_to: null, locked_until: null })
 }

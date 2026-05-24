@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
-import { ensureTeamForUser, signUpWithEmail, syncProfileFromAuth } from '../../supabase/auth'
+import { clearStoredOnboarding, completePendingOnboarding, signUpWithEmail, storePendingOnboarding } from '../../supabase/auth'
 
 export default function RegisterPage() {
+  const [role, setRole] = useState<'leader' | 'member'>('leader')
   const [teamName, setTeamName] = useState('')
+  const [hiddenCode, setHiddenCode] = useState('')
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -25,29 +28,51 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
 
-    const { data, error: authError } = await signUpWithEmail(email.trim(), nextPassword, teamName.trim())
+    if (role === 'leader' && !teamName.trim()) {
+      setLoading(false)
+      setError('Team name is required for leader registration')
+      return
+    }
+
+    if (role === 'member' && !hiddenCode.trim()) {
+      setLoading(false)
+      setError('Hidden code is required for member registration')
+      return
+    }
+
+    storePendingOnboarding({
+      role,
+      teamName: teamName.trim(),
+      hiddenCode: hiddenCode.trim(),
+      fullName: fullName.trim(),
+    })
+
+    const { data, error: authError } = await signUpWithEmail(email.trim(), nextPassword, {
+      role,
+      teamName: teamName.trim(),
+      hiddenCode: hiddenCode.trim(),
+      fullName: fullName.trim(),
+    })
 
     if (authError) {
+      clearStoredOnboarding()
       setLoading(false)
       setError(authError.message)
       return
     }
 
-    if (data.user) {
-      const { error: profileError } = await syncProfileFromAuth(data.user, teamName.trim())
-      if (profileError) {
+    if (data.session?.user) {
+      try {
+        await completePendingOnboarding(data.session.user)
+      } catch (onboardingError) {
         setLoading(false)
-        setError(profileError.message)
+        setError(onboardingError instanceof Error ? onboardingError.message : 'Unable to complete onboarding')
         return
       }
 
-      try {
-        await ensureTeamForUser(data.user, teamName.trim())
-      } catch (teamError) {
-        setLoading(false)
-        setError(teamError instanceof Error ? teamError.message : 'Unable to prepare your team record')
-        return
-      }
+      setLoading(false)
+      navigate('/dashboard')
+      return
     }
 
     setLoading(false)
@@ -94,12 +119,33 @@ export default function RegisterPage() {
               32
             </div>
             <h2 className="text-3xl font-extrabold text-white">Enlist Team</h2>
-            <p className="text-text-500 text-sm mt-2">Initialize your hackathon deployment</p>
+            <p className="text-text-500 text-sm mt-2">Create a leader account or join an existing team as a member</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Team Name</label>
+              <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Role</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button type="button" onClick={() => setRole('leader')} className={`rounded-xl border px-4 py-3 text-sm font-semibold ${role === 'leader' ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 bg-white/5 text-text-500'}`}>Leader</button>
+                <button type="button" onClick={() => setRole('member')} className={`rounded-xl border px-4 py-3 text-sm font-semibold ${role === 'member' ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 bg-white/5 text-text-500'}`}>Member</button>
+              </div>
+              <p className="mt-2 text-xs text-text-500">Admin accounts are managed separately.</p>
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Full Name</label>
+              <input
+                type="text"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Your name"
+                className="w-full bg-white/[0.02] border border-white/10 rounded-xl py-3 px-4 text-white placeholder-text-500/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">{role === 'leader' ? 'Team Name' : 'Team Name (optional)'}</label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-text-500">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -108,14 +154,35 @@ export default function RegisterPage() {
                 </span>
                 <input
                   type="text"
-                  required
+                  required={role === 'leader'}
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="CyberWarriors"
+                  placeholder={role === 'leader' ? 'CyberWarriors' : 'Can be left blank'}
                   className="w-full bg-white/[0.02] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-text-500/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium"
                 />
               </div>
             </div>
+
+            {role === 'member' ? (
+              <div>
+                <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Team Hidden Code</label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-text-500">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c0-.46.31-.84.7-.99a3 3 0 10-3.4 0c.39.15.7.53.7.99v1m0 4h4m2 3H6a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2z" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    value={hiddenCode}
+                    onChange={(e) => setHiddenCode(e.target.value)}
+                    placeholder="BUG-X91A"
+                    className="w-full bg-white/[0.02] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-text-500/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium"
+                  />
+                </div>
+              </div>
+            ) : null}
 
             <div>
               <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Leader's Email</label>
@@ -130,7 +197,7 @@ export default function RegisterPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="leader@example.com"
+                  placeholder={role === 'leader' ? 'leader@example.com' : 'member@example.com'}
                   className="w-full bg-white/[0.02] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-text-500/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium"
                 />
               </div>
