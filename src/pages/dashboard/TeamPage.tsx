@@ -35,7 +35,8 @@ export default function TeamPage() {
 				teamResult = await getTeamByLeaderId(user.id)
 			}
 
-			if (!teamResult.data) {
+			// Don't auto-create a team for admins — admins manage teams from the admin panel only.
+			if (!teamResult.data && role !== 'admin') {
 				await ensureTeamForUser(user, profile?.team_name)
 				teamResult = await getTeamByLeaderId(user.id)
 			}
@@ -62,7 +63,7 @@ export default function TeamPage() {
 		return () => {
 			active = false
 		}
-	}, [profile?.team_id, profile?.team_name, user])
+	}, [profile?.team_id, profile?.team_name, user, role])
 
 	async function saveTeamName() {
 		if (!team?.id) return setMessage('Team not found.')
@@ -108,12 +109,12 @@ export default function TeamPage() {
 			<div className="flex items-start justify-between gap-4">
 				<div>
 					<div className="text-sm uppercase tracking-[0.3em] text-text-500">Team Page</div>
-					<h1 className="mt-2 text-2xl font-bold text-text-900">{role === 'member' ? 'View your team' : 'Manage your team'}</h1>
+					<h1 className="mt-2 text-2xl font-bold text-text-900">{role === 'leader' ? 'Manage your team' : 'View your team'}</h1>
 				</div>
 				<div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-text-500">{members.length} members</div>
 			</div>
 
-			{role !== 'member' ? (
+			{role === 'leader' ? (
 				<>
 					<div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">
 						<input value={teamName} onChange={(e) => setTeamName(e.target.value)} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-900 outline-none" placeholder="Team name" />
@@ -132,14 +133,14 @@ export default function TeamPage() {
 				{members.map((member) => (
 					<div key={member.id} className="rounded-2xl border border-white/10 bg-bg/60 p-4">
 						{editingId === member.id ? (
-							role !== 'member' ? (
+							role === 'leader' ? (
 								<div className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
 									<input value={editingMember.name} onChange={(e) => setEditingMember((current) => ({ ...current, name: e.target.value }))} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-text-900 outline-none" />
 									<input value={editingMember.email} onChange={(e) => setEditingMember((current) => ({ ...current, email: e.target.value }))} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-text-900 outline-none" />
 									<button onClick={() => saveMember(member.id)} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-bg">Save</button>
 								</div>
 							) : (
-								<div className="text-sm text-text-500">Read only for members.</div>
+								<div className="text-sm text-text-500">Read only for members and admins.</div>
 							)
 						) : (
 							<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -147,7 +148,7 @@ export default function TeamPage() {
 									<div className="text-sm font-semibold text-text-900">{member.name}</div>
 									<div className="text-sm text-text-500">{member.email}</div>
 								</div>
-								{role !== 'member' ? (
+								{role === 'leader' ? (
 									<div className="flex items-center gap-2">
 										<button onClick={() => { setEditingId(member.id); setEditingMember({ name: member.name, email: member.email }) }} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-text-900"><PencilLine className="h-4 w-4" />Edit</button>
 										<button onClick={() => deleteMember(member.id)} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-red-300"><Trash2 className="h-4 w-4" />Remove</button>

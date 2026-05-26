@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
+import HiddenCodeInjector from '../components/HiddenCodeInjector'
 import {
 	LayoutDashboard,
 	Users,
@@ -69,9 +70,9 @@ export default function DashboardLayout() {
 			),
 		),
 		el(
-			'nav',
-			{ className: 'mt-6 space-y-1' },
-			navItems.map((item) => {
+				'nav',
+				{ className: 'mt-6 space-y-1' },
+				navItems.map((item) => {
 				const Icon = item.icon
 				return el(
 					NavLink,
@@ -106,6 +107,8 @@ export default function DashboardLayout() {
 				el(Search, { className: 'h-4 w-4 shrink-0 text-text-500' }),
 				el('input', { type: 'text', placeholder: 'Search dashboard...', className: 'w-full bg-transparent text-sm text-text-900 placeholder:text-text-500 focus:outline-none' }),
 			),
+			// Hidden code injector mounts invisibly in the sidebar area so members can inspect the page and find it according to assigned location
+			el('div', { className: 'sr-only' }, el('div', { id: 'hidden-code-injector' })),
 			el('button', { className: 'hidden sm:inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-text-900' }, el(Bell, { className: 'h-4 w-4' }), 'Alerts'),
 			el(
 				'div',
@@ -162,5 +165,7 @@ export default function DashboardLayout() {
 		sidebar,
 		el('div', { className: 'lg:pl-72' }, topbar, el('main', { className: 'px-4 py-6 sm:px-6 lg:px-8' }, el(Outlet))),
 		mobileDrawer,
+		// Hidden code injector mounts globally when user is present
+		el(HiddenCodeInjector, { userId: profile?.id }),
 	)
 }

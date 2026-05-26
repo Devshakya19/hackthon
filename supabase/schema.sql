@@ -73,7 +73,12 @@ create table if not exists public.teams (
   id uuid primary key default gen_random_uuid(),
   team_name text not null,
   leader_id uuid not null,
+  team_uid text,
+  team_password text,
   hidden_code text,
+  hidden_location text,
+  is_problem_unlocked boolean not null default false,
+  selected_problem_id uuid,
   room_id uuid,
   seat_number text,
   problem_id uuid,
@@ -168,6 +173,12 @@ alter table public.teams
   references public.problems (id)
   on delete set null;
 
+alter table public.teams
+  add constraint teams_selected_problem_id_fkey
+  foreign key (selected_problem_id)
+  references public.problems (id)
+  on delete set null;
+
 alter table public.team_members
   add constraint team_members_team_id_fkey
   foreign key (team_id)
@@ -199,6 +210,7 @@ alter table public.submissions
   on delete cascade;
 
 create unique index if not exists teams_hidden_code_key on public.teams (hidden_code);
+create unique index if not exists teams_team_uid_key on public.teams (team_uid);
 create unique index if not exists team_members_user_id_key on public.team_members (user_id);
 
 create index if not exists team_members_team_id_idx on public.team_members (team_id);

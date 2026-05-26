@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { clearStoredOnboarding, completePendingOnboarding, signUpWithEmail, storePendingOnboarding } from '../../supabase/auth'
 
 export default function RegisterPage() {
-  const [role, setRole] = useState<'leader' | 'member'>('leader')
+  // Registration defaults to team leader accounts for normal users.
+  const role: 'leader' | 'member' = 'leader'
   const [teamName, setTeamName] = useState('')
   const [hiddenCode, setHiddenCode] = useState('')
   const [fullName, setFullName] = useState('')
@@ -28,29 +29,24 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
 
-    if (role === 'leader' && !teamName.trim()) {
+    if (!teamName.trim()) {
       setLoading(false)
-      setError('Team name is required for leader registration')
+      setError('Team name is required for registration')
       return
     }
 
-    if (role === 'member' && !hiddenCode.trim()) {
-      setLoading(false)
-      setError('Hidden code is required for member registration')
-      return
-    }
 
     storePendingOnboarding({
       role,
       teamName: teamName.trim(),
-      hiddenCode: hiddenCode.trim(),
+      hiddenCode: '',
       fullName: fullName.trim(),
     })
 
     const { data, error: authError } = await signUpWithEmail(email.trim(), nextPassword, {
       role,
       teamName: teamName.trim(),
-      hiddenCode: hiddenCode.trim(),
+      hiddenCode: '',
       fullName: fullName.trim(),
     })
 
@@ -114,23 +110,14 @@ export default function RegisterPage() {
           {/* Top subtle glow bar */}
           <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary to-neon-purple" />
           
-          <div className="text-center mb-8">
+            <div className="text-center mb-8">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-neon-purple flex items-center justify-center text-bg font-extrabold text-xl mx-auto shadow-[0_0_15px_rgba(0,240,255,0.4)] mb-4">
               32
             </div>
             <h2 className="text-3xl font-extrabold text-white">Enlist Team</h2>
-            <p className="text-text-500 text-sm mt-2">Create a leader account or join an existing team as a member</p>
+            <p className="text-text-500 text-sm mt-2">Create a team leader account (members can be added by leaders)</p>
           </div>
-
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Role</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button type="button" onClick={() => setRole('leader')} className={`rounded-xl border px-4 py-3 text-sm font-semibold ${role === 'leader' ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 bg-white/5 text-text-500'}`}>Leader</button>
-                <button type="button" onClick={() => setRole('member')} className={`rounded-xl border px-4 py-3 text-sm font-semibold ${role === 'member' ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 bg-white/5 text-text-500'}`}>Member</button>
-              </div>
-              <p className="mt-2 text-xs text-text-500">Admin accounts are managed separately.</p>
-            </div>
 
             <div>
               <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Full Name</label>
@@ -145,7 +132,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">{role === 'leader' ? 'Team Name' : 'Team Name (optional)'}</label>
+              <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Team Name</label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-text-500">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -154,35 +141,16 @@ export default function RegisterPage() {
                 </span>
                 <input
                   type="text"
-                  required={role === 'leader'}
+                  required
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  placeholder={role === 'leader' ? 'CyberWarriors' : 'Can be left blank'}
+                  placeholder="CyberWarriors"
                   className="w-full bg-white/[0.02] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-text-500/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium"
                 />
               </div>
             </div>
 
-            {role === 'member' ? (
-              <div>
-                <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Team Hidden Code</label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-text-500">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c0-.46.31-.84.7-.99a3 3 0 10-3.4 0c.39.15.7.53.7.99v1m0 4h4m2 3H6a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2z" />
-                    </svg>
-                  </span>
-                  <input
-                    type="text"
-                    required
-                    value={hiddenCode}
-                    onChange={(e) => setHiddenCode(e.target.value)}
-                    placeholder="BUG-X91A"
-                    className="w-full bg-white/[0.02] border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white placeholder-text-500/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm font-medium"
-                  />
-                </div>
-              </div>
-            ) : null}
+            {/* Hidden code is only used when joining an existing team; leaders create teams so it's not shown here. */}
 
             <div>
               <label className="block text-xs uppercase tracking-widest text-text-500 font-semibold mb-2">Leader's Email</label>

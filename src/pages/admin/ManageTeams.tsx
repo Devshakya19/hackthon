@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { type ProblemRow, type RoomRow, type TeamMemberRow, type TeamRow } from '../../supabase/database'
 import { listAllTeamMembers, listProblems, listRooms, listTeams, removeTeam, updateTeam } from '../../supabase/queries'
+import { useAuth } from '../../hooks/useAuth'
 
 export default function ManageTeams() {
 	const [teams, setTeams] = useState<TeamRow[]>([])
@@ -8,6 +9,8 @@ export default function ManageTeams() {
 	const [rooms, setRooms] = useState<RoomRow[]>([])
 	const [problems, setProblems] = useState<ProblemRow[]>([])
 	const [message, setMessage] = useState('')
+
+	const { user } = useAuth()
 
 	useEffect(() => {
 		async function load() {
@@ -17,14 +20,21 @@ export default function ManageTeams() {
 				listRooms(),
 				listProblems(),
 			])
-			setTeams((teamsResult.data ?? []) as TeamRow[])
-			setMembers((membersResult.data ?? []) as TeamMemberRow[])
+
+			const rawTeams = (teamsResult.data ?? []) as TeamRow[]
+			const rawMembers = (membersResult.data ?? []) as TeamMemberRow[]
+			const authUserId = user?.id
+			const authUserEmail = user?.email
+
+			// Hide any teams owned by the current admin user and hide the admin's own account from member lists
+			setTeams(rawTeams.filter((t) => t.leader_id !== authUserId))
+			setMembers(rawMembers.filter((m) => m.email !== authUserEmail))
 			setRooms((roomsResult.data ?? []) as RoomRow[])
 			setProblems((problemsResult.data ?? []) as ProblemRow[])
 		}
 
 		void load()
-	}, [])
+	}, [user])
 
 	const membersByTeam = useMemo(() => {
 		return members.reduce<Record<string, TeamMemberRow[]>>((accumulator, member) => {
@@ -62,6 +72,10 @@ export default function ManageTeams() {
 							<div className="space-y-3">
 								<div className="text-xl font-bold text-text-900">{team.team_name}</div>
 								<div className="text-sm text-text-500">Leader: {team.leader_id}</div>
+								<div className="text-sm text-text-500">Team UID: {team.team_uid}</div>
+								<div className="text-sm text-text-500">Team Password: {team.team_password}</div>
+								<div className="text-sm text-text-500">Hidden Code: {team.hidden_code}</div>
+								<div className="text-sm text-text-500">Hidden Location: {team.hidden_location}</div>
 								<div className="text-sm text-text-500">Problem: {team.problem_id || '--'}</div>
 								<div className="text-sm text-text-500">Room: {team.room_id || '--'}</div>
 								<div className="text-sm text-text-500">Seat: {team.seat_number || '--'}</div>

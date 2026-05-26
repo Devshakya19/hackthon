@@ -22,11 +22,15 @@ export async function getUserById(id: string) {
 }
 
 export async function updateUserById(id: string, values: Partial<UserRow>) {
-	return supabase.from('users').update(values).eq('id', id)
+	return supabase.from('users').update(values).eq('id', id).select().single()
 }
 
 export async function createTeam(team: TeamRow) {
-	return supabase.from('teams').insert(team)
+	return supabase.from('teams').insert(team).select().single()
+}
+
+export async function getTeamByUIDAndPassword(teamUid: string, teamPassword: string) {
+	return supabase.from('teams').select('*').eq('team_uid', teamUid).eq('team_password', teamPassword).maybeSingle()
 }
 
 export async function getTeamByLeaderId(leaderId: string) {
@@ -50,7 +54,7 @@ export async function addTeamMember(member: TeamMemberRow) {
 }
 
 export async function createTeamMember(member: TeamMemberRow) {
-	return supabase.from('team_members').insert(member)
+	return supabase.from('team_members').insert(member).select().single()
 }
 
 export async function getTeamMemberByUserId(userId: string) {

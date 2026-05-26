@@ -30,9 +30,14 @@ function deriveProfile(user: User | null): ProfileRow | null {
 
 	return {
 		id: user.id,
+		name: String(user.user_metadata?.name ?? user.user_metadata?.full_name ?? user.email ?? 'User'),
 		email: user.email ?? '',
-		team_name: String(user.user_metadata?.team_name ?? ''),
 		role: resolveRole(user),
+		team_name: String(user.user_metadata?.team_name ?? ''),
+		team_id: (user.user_metadata?.team_id as string | undefined) ?? null,
+		hidden_code: (user.user_metadata?.hidden_code as string | undefined) ?? null,
+		seat_id: (user.user_metadata?.seat_id as string | undefined) ?? null,
+		selected_problem: (user.user_metadata?.selected_problem as string | undefined) ?? null,
 	}
 }
 

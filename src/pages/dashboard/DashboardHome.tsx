@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { ensureTeamForUser } from '../../supabase/auth'
 import { getTeamById, type AnnouncementRow, type ProblemRow, type RoomRow, type SubmissionRow, type TeamMemberRow, type TeamRow } from '../../supabase/database'
 import { getTeamByLeaderId, getTeamMembers, listAnnouncements, listProblems, listRooms, listSubmissions } from '../../supabase/queries'
+import Skeleton from '../../components/Skeleton'
 
 function SummaryCard({ label, value, hint }: { label: string; value: string; hint: string }) {
 	return (
@@ -106,7 +107,24 @@ export default function DashboardHome() {
 	const seatValue = team?.seat_number || (assignedRoom ? `${assignedRoom.block}-${assignedRoom.room_number}` : 'Unassigned')
 
 	if (loading) {
-		return <div className="glass-card rounded-3xl border-white/10 bg-white/5 p-6 text-sm text-text-500">Loading overview...</div>
+		return (
+			<div className="space-y-6">
+				<section className="grid gap-4 lg:grid-cols-4">
+					<div className="p-5"><Skeleton className="h-20 w-full" /></div>
+					<div className="p-5"><Skeleton className="h-20 w-full" /></div>
+					<div className="p-5"><Skeleton className="h-20 w-full" /></div>
+					<div className="p-5"><Skeleton className="h-20 w-full" /></div>
+				</section>
+
+				<section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+					<div className="p-6"><Skeleton className="h-64 w-full" /></div>
+					<div className="space-y-6">
+						<div className="p-6"><Skeleton className="h-28 w-full" /></div>
+						<div className="p-6"><Skeleton className="h-36 w-full" /></div>
+					</div>
+				</section>
+			</div>
+		)
 	}
 
 	return (

@@ -52,6 +52,7 @@ export default function ProblemStatements() {
 			const nextTeam = teamResult.data ?? null
 			setTeam(nextTeam)
 			setProblems((data ?? []) as ProblemRow[])
+			setUnlocked(Boolean(nextTeam?.is_problem_unlocked))
 			setSelectedProblem(nextTeam?.problem_id ? (data ?? []).find((problem) => problem.id === nextTeam.problem_id) ?? null : null)
 			setPendingProblemId(null)
 			setLoading(false)
@@ -64,8 +65,10 @@ export default function ProblemStatements() {
 		}
 	}, [profile?.team_id, profile?.team_name, user])
 
-	const displayHiddenCode = profile?.hidden_code || ''
-	const canManageProblems = role === 'leader' || role === 'admin'
+	// displayHiddenCode is stored on the team row
+	const displayHiddenCode = team?.hidden_code || profile?.hidden_code || ''
+	// Only team leaders are allowed to unlock/select problems.
+	const canManageProblems = role === 'leader'
 	const visibleProblems = useMemo(() => problems.map((problem) => ({
 		problem,
 		isLockedByOther: Boolean(problem.assigned_to && team?.id && problem.assigned_to !== team.id),
@@ -76,6 +79,10 @@ export default function ProblemStatements() {
 	function unlockBoard() {
 		if (!displayHiddenCode) return setMessage('Hidden code is not available yet.')
 		if (hiddenCode.trim() === displayHiddenCode) {
+			// persist unlocked flag on team
+			if (team?.id) {
+				void updateTeam(team.id, { is_problem_unlocked: true })
+			}
 			setUnlocked(true)
 			setMessage('Problem statements unlocked.')
 			return
@@ -85,7 +92,7 @@ export default function ProblemStatements() {
 
 	async function selectProblem(problem: ProblemRow) {
 		if (!team?.id) return setMessage('Team not ready yet.')
-		if (!canManageProblems) return setMessage('Only leader/admin can unlock and select problems.')
+		if (!canManageProblems) return setMessage('Only team leaders can unlock and select problems.')
 		if (!unlocked) return setMessage('Enter the hidden code first.')
 		if (problem.assigned_to && problem.assigned_to !== team.id) return setMessage('This problem is already reserved by another team.')
 
@@ -141,7 +148,7 @@ export default function ProblemStatements() {
 				</div>
 
 				<div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-					{visibleProblems.map(({ problem, isSelected, isLockedByOther }) => (
+					{visibleProblems.map(({ problem, isSelected, isLockedByOther, isPending }) => (
 						<button key={problem.id} onClick={() => selectProblem(problem)} disabled={!canManageProblems} className={`rounded-3xl border p-5 text-left transition-colors ${isSelected ? 'border-primary bg-primary/10' : 'border-white/10 bg-bg/70'} ${isLockedByOther ? 'opacity-70' : ''} ${!canManageProblems ? 'cursor-default opacity-80' : ''}`}>
 							<div className="flex items-start justify-between gap-3">
 								<div>

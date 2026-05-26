@@ -21,7 +21,12 @@ export type TeamRow = {
 	id: string
 	team_name: string
 	leader_id: string
+	team_uid?: string | null
+	team_password?: string | null
 	hidden_code: string | null
+	hidden_location?: string | null
+	is_problem_unlocked?: boolean | null
+	selected_problem_id?: string | null
 	room_id: string | null
 	seat_number: string | null
 	problem_id: string | null

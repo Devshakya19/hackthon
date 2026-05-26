@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import LandingPage from '../pages/marketing/LandingPage'
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
+import JoinTeamPage from '../pages/auth/JoinTeamPage'
 import ForgotPassword from '../pages/auth/ForgotPassword'
 import VerifyEmail from '../pages/auth/VerifyEmail'
 import DashboardLayout from '../layouts/DashboardLayout'
@@ -19,6 +20,7 @@ import ManageAnnouncements from '../pages/admin/ManageAnnouncements'
 import SeatManager from '../pages/admin/SeatManager'
 import JudgingPanel from '../pages/admin/JudgingPanel'
 import EmergencyControls from '../pages/admin/EmergencyControls'
+import AdminLayout from '../layouts/AdminLayout'
 import { useAuth } from '../hooks/useAuth'
 
 function LoadingGate() {
@@ -68,6 +70,7 @@ export default function AppRoutes() {
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/join" element={<JoinTeamPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
       </Route>
@@ -79,15 +82,19 @@ export default function AppRoutes() {
           <Route path="problems" element={<ProblemStatements />} />
           <Route path="announcements" element={<Announcements />} />
           <Route path="submission" element={<SubmissionPage />} />
-          <Route element={<RequireRole allowedRoles={['admin']} />}>
-            <Route path="admin" element={<AdminDashboard />} />
-            <Route path="admin/rooms" element={<ManageRooms />} />
-            <Route path="admin/problems" element={<ManageProblems />} />
-            <Route path="admin/teams" element={<ManageTeams />} />
-            <Route path="admin/announcements" element={<ManageAnnouncements />} />
-            <Route path="admin/seating" element={<SeatManager />} />
-            <Route path="admin/judging" element={<JudgingPanel />} />
-            <Route path="admin/emergency" element={<EmergencyControls />} />
+        </Route>
+
+        {/* Admin routes use their own layout so the left navigation is admin-specific */}
+        <Route element={<RequireRole allowedRoles={['admin']} />}>
+          <Route path="/dashboard/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="rooms" element={<ManageRooms />} />
+            <Route path="problems" element={<ManageProblems />} />
+            <Route path="teams" element={<ManageTeams />} />
+            <Route path="announcements" element={<ManageAnnouncements />} />
+            <Route path="seating" element={<SeatManager />} />
+            <Route path="judging" element={<JudgingPanel />} />
+            <Route path="emergency" element={<EmergencyControls />} />
           </Route>
         </Route>
       </Route>

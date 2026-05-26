@@ -3,8 +3,9 @@
     "target": "esnext",
     "module": "esnext",
     "jsx": "react-jsx",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
+    "skipLibCheck": true,
     "esModuleInterop": true
   }
 }
