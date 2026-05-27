@@ -5,7 +5,6 @@ import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import JoinTeamPage from "../pages/auth/JoinTeamPage";
 import ForgotPassword from "../pages/auth/ForgotPassword";
-import VerifyEmail from "../pages/auth/VerifyEmail";
 import DashboardLayout from "../layouts/DashboardLayout";
 import DashboardHome from "../pages/dashboard/DashboardHome";
 import TeamPage from "../pages/dashboard/TeamPage";
@@ -84,7 +83,6 @@ export default function AppRoutes() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/join" element={<JoinTeamPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
       </Route>
 
       <Route element={<ProtectedRoute />}>

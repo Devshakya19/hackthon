@@ -266,6 +266,32 @@ as $$
   select public.current_user_role() in ('leader', 'admin');
 $$;
 
+drop function if exists public.verify_member_login(text, text);
+
+create or replace function public.verify_member_login(p_email text, p_password text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_team_id uuid;
+  v_name text;
+begin
+  select tm.team_id, tm.name into v_team_id, v_name
+  from public.team_members tm
+  join public.teams t on t.id = tm.team_id
+  where tm.email = p_email and t.team_password = p_password
+  limit 1;
+
+  if v_team_id is not null then
+    return jsonb_build_object('valid', true, 'team_id', v_team_id, 'name', v_name);
+  else
+    return jsonb_build_object('valid', false);
+  end if;
+end;
+$$;
+
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -280,6 +306,10 @@ declare
   next_seat_id text := nullif(raw_metadata ->> 'seat_id', '');
   next_selected_problem text := nullif(raw_metadata ->> 'selected_problem', '');
 begin
+  if next_role = 'member' and next_team_id is not null and next_team_name = '' then
+    select team_name into next_team_name from public.teams where id = next_team_id;
+  end if;
+
   insert into public.users (
     id,
     name,
@@ -306,10 +336,38 @@ begin
     name = excluded.name,
     email = excluded.email,
     role = excluded.role,
-    team_name = excluded.team_name;
+    team_name = excluded.team_name,
+    team_id = coalesce(public.users.team_id, excluded.team_id);
+
+  if next_role = 'member' and next_team_id is not null then
+    update public.team_members 
+    set user_id = new.id
+    where team_id = next_team_id and email = new.email and user_id is null;
+  end if;
 
   return new;
 end;
+$$;
+
+
+
+create or replace function public.get_team_snapshot(p_team_id uuid)
+returns jsonb
+language sql
+security definer
+set search_path = public
+as $$
+  select jsonb_build_object(
+    'team', to_jsonb(t),
+    'members', coalesce(
+      jsonb_agg(to_jsonb(tm)) filter (where tm.id is not null),
+      '[]'::jsonb
+    )
+  )
+  from public.teams t
+  left join public.team_members tm on tm.team_id = t.id
+  where t.id = p_team_id
+  group by t.id;
 $$;
 
 alter table public.users enable row level security;
@@ -328,6 +386,8 @@ grant select, insert, update, delete on public.problems to anon, authenticated;
 grant select, insert, update, delete on public.rooms to anon, authenticated;
 grant select, insert, update, delete on public.announcements to anon, authenticated;
 grant select, insert, update, delete on public.submissions to anon, authenticated;
+grant execute on function public.verify_member_login(text, text) to anon, authenticated;
+grant execute on function public.get_team_snapshot(uuid) to anon, authenticated;
 
 create policy "users_select_own_or_admin"
 on public.users

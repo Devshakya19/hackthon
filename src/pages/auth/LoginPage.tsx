@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmail } from "../../supabase/auth";
-
-function isEmailNotConfirmedError(message: string) {
-  return (
-    message.toLowerCase().includes("email not confirmed") ||
-    message.toLowerCase().includes("email not verified")
-  );
-}
+import { signInWithEmail, getSignupEmailCooldownLeft, markSignupEmailCooldown, isEmailRateLimitError } from "../../supabase/auth";
+import { supabase } from "../../supabase/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -28,10 +22,65 @@ export default function LoginPage() {
     );
 
     if (authError) {
-      if (isEmailNotConfirmedError(authError.message)) {
-        setLoading(false);
-        navigate("/verify-email", { state: { email: email.trim() } });
-        return;
+
+      // Check if this is an unregistered member logging in with team credentials
+      const { data: verifyData, error: verifyError } = await supabase.rpc(
+        "verify_member_login",
+        {
+          p_email: email.trim(),
+          p_password: password,
+        }
+      );
+
+      if (!verifyError && verifyData && (verifyData as any).valid) {
+        const trimmedEmail = email.trim();
+
+        const cooldownLeft = getSignupEmailCooldownLeft(trimmedEmail);
+        if (cooldownLeft > 0) {
+          setLoading(false);
+          setError(
+            `Please wait ${cooldownLeft} seconds before trying again.`
+          );
+          return;
+        }
+
+        const { data: signUpData, error: signUpError } =
+          await supabase.auth.signUp({
+            email: trimmedEmail,
+            password: password,
+            options: {
+              data: {
+                role: "member",
+                team_id: (verifyData as any).team_id,
+                name: (verifyData as any).name,
+              },
+            },
+          });
+
+        if (signUpError) {
+          if (isEmailRateLimitError(signUpError.message)) {
+            markSignupEmailCooldown(trimmedEmail);
+            setLoading(false);
+            setError(
+              "Rate limit exceeded. Please wait before trying again."
+            );
+            return;
+          }
+
+          setLoading(false);
+          setError(signUpError.message);
+          return;
+        }
+
+        if (signUpData.session) {
+          setLoading(false);
+          navigate("/dashboard");
+          return;
+        } else {
+          setLoading(false);
+          setError("Login successful, but session was not returned.");
+          return;
+        }
       }
 
       setLoading(false);
@@ -54,7 +103,7 @@ export default function LoginPage() {
     }
 
     setLoading(false);
-    navigate("/verify-email");
+    setError("Invalid login credentials.");
   };
 
   return (

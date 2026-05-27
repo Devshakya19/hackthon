@@ -105,10 +105,8 @@ export default function RegisterPage() {
       return;
     }
 
-    markSignupEmailCooldown(trimmedEmail);
-    setCooldownLeft(getSignupEmailCooldownLeft(trimmedEmail));
     setLoading(false);
-    navigate("/verify-email", { state: { email: email.trim() } });
+    setError("Registration successful, but session was not returned. Please try logging in.");
   };
 
   return (
