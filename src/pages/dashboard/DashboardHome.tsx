@@ -74,8 +74,13 @@ export default function DashboardHome() {
 
       if (!teamResult.data) {
         try {
-          await ensureTeamForUser(user, profile?.team_name);
-          teamResult = await getTeamByLeaderId(user.id);
+          if (profile?.role === "leader") {
+            await ensureTeamForUser(user, profile?.team_name);
+            teamResult = await getTeamByLeaderId(user.id);
+          } else if (profile?.role === "member") {
+            // Do NOT auto-create a team for members if they don't have one
+            // We just let the teamResult stay null.
+          }
         } catch (error) {
           if (!active) return;
           setMessage(
@@ -187,7 +192,11 @@ export default function DashboardHome() {
         <SummaryCard
           label="Team Members"
           value={String(members.length)}
-          hint="Names only in overview"
+          hint={
+            members.length
+              ? members.map((m) => m.name).join(", ")
+              : "No members yet"
+          }
         />
         <SummaryCard
           label="Seat"
@@ -215,17 +224,31 @@ export default function DashboardHome() {
           </h2>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {members.length ? (
-              members.map((member) => (
-                <div
-                  key={member.id}
-                  className="rounded-2xl border border-white/10 bg-bg/60 p-4"
-                >
-                  <div className="text-sm font-semibold text-text-900">
-                    {member.name}
+              members.map((member) => {
+                const isLeader = team?.leader_id === member.user_id;
+                return (
+                  <div
+                    key={member.id}
+                    className="flex items-start justify-between rounded-2xl border border-white/10 bg-bg/60 p-4"
+                  >
+                    <div>
+                      <div className="text-sm font-semibold text-text-900">
+                        {member.name}
+                      </div>
+                      <div className="text-sm text-text-500">{member.email}</div>
+                    </div>
+                    {isLeader ? (
+                      <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                        Leader
+                      </span>
+                    ) : (
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-text-500">
+                        Member
+                      </span>
+                    )}
                   </div>
-                  <div className="text-sm text-text-500">{member.email}</div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="text-sm text-text-500">
                 No team members added yet.

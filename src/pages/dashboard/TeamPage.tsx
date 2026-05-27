@@ -55,8 +55,8 @@ export default function TeamPage() {
           teamResult = await getTeamByLeaderId(user.id);
         }
 
-        // Don't auto-create a team for admins — admins manage teams from the admin panel only.
-        if (!teamResult.data && role !== "admin") {
+        // Don't auto-create a team for members or admins — admins manage teams from the admin panel only.
+        if (!teamResult.data && role === "leader") {
           await ensureTeamForUser(user, profile?.team_name);
           teamResult = await getTeamByLeaderId(user.id);
         }
@@ -260,11 +260,22 @@ export default function TeamPage() {
               )
             ) : (
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <div className="text-sm font-semibold text-text-900">
-                    {member.name}
+                <div className="flex w-full items-start justify-between md:w-auto md:gap-6">
+                  <div>
+                    <div className="pr-2 text-sm font-semibold text-text-900">
+                      {member.name}
+                    </div>
+                    <div className="text-sm text-text-500">{member.email}</div>
                   </div>
-                  <div className="text-sm text-text-500">{member.email}</div>
+                  {team?.leader_id === member.user_id ? (
+                    <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                      Leader
+                    </span>
+                  ) : (
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-text-500">
+                      Member
+                    </span>
+                  )}
                 </div>
                 {role === "leader" ? (
                   <div className="flex items-center gap-2">

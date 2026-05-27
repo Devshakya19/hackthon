@@ -1,0 +1,26 @@
+# Changes Log
+
+1. Registration Flow Updates:
+   - Modified `src/pages/auth/RegisterPage.tsx` to remove the email verification cooldown (signupCooldownLeft) that prevented immediate account creation and login during rapid testing.
+   - Advised disabling Email Authentication Confirmations in the Supabase dashboard to prevent HTTP 429 "Too Many Requests" errors on bulk signups.
+
+2. UI/UX Dashboard Enhancements:
+   - `src/pages/dashboard/DashboardHome.tsx`: Added dynamic "Leader" and "Member" indicator badges next to user names in the team roster.
+   - `src/pages/dashboard/DashboardHome.tsx`: Updated the "Team Members" summary card to display actual member names instead of static placeholder text.
+   - `src/pages/dashboard/TeamPage.tsx`: Added the same "Leader" and "Member" badges to the manageable team roster.
+
+3. Fixed Team Duplication Bug:
+   - Problem: `member` users logging into the dashboard without an assigned team were automatically triggering the `ensureTeamForUser()` function, generating empty ghost/duplicate teams in the database.
+   - Fix: Restricted `ensureTeamForUser()` calls with conditional checks so it only runs if the user's role is `leader`. Members will no longer auto-create ghost teams upon logging in.
+   - Files Modified:
+     - `src/pages/dashboard/DashboardHome.tsx`
+     - `src/pages/dashboard/TeamPage.tsx`
+     - `src/pages/dashboard/SubmissionPage.tsx`
+     - `src/pages/dashboard/ProblemStatements.tsx`
+     - `src/pages/dashboard/Announcements.tsx`
+
+4. Documentation:
+   - Updated `README.md` to append a "Fixes & Updates" section containing these patch details.
+
+5. Environment Setup Debugging:
+   - Troubleshot frontend build issues (missing `vite` errors) and traced failing `npm install` runs to network `ENOTFOUND` connectivity issues with the npm registry.

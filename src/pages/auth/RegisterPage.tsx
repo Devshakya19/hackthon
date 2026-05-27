@@ -45,14 +45,7 @@ export default function RegisterPage() {
     }
 
     const signupCooldownLeft = getSignupEmailCooldownLeft(trimmedEmail);
-    if (signupCooldownLeft > 0) {
-      setLoading(false);
-      setCooldownLeft(signupCooldownLeft);
-      setError(
-        `A verification email was already sent for this address. Please wait ${signupCooldownLeft} seconds or check your inbox.`
-      );
-      return;
-    }
+    // Cooldown check disabled to allow immediate creation & login
 
     storePendingOnboarding({
       role,
@@ -71,16 +64,6 @@ export default function RegisterPage() {
     );
 
     if (authError) {
-      if (isEmailRateLimitError(authError.message)) {
-        markSignupEmailCooldown(trimmedEmail);
-        setCooldownLeft(getSignupEmailCooldownLeft(trimmedEmail));
-        setLoading(false);
-        setError(
-          "A verification email was already sent for this address. Please check your inbox and spam folder before trying again."
-        );
-        return;
-      }
-
       clearStoredOnboarding();
       setLoading(false);
       setError(authError.message);

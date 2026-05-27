@@ -32,7 +32,7 @@ export default function Announcements() {
 
       setAnnouncements((data ?? []) as AnnouncementRow[]);
 
-      if (!profile?.team_id) {
+      if (!profile?.team_id && profile?.role === "leader") {
         try {
           await ensureTeamForUser(user, profile?.team_name);
           await getTeamByLeaderId(user.id);

@@ -73,6 +73,14 @@ npm run dev
 - The dashboard now resolves the current team from the authenticated user profile and falls back to Supabase lookups when needed.
 - Resend and reset email flows use local cooldown protection to reduce repeated requests and avoid rate-limit errors.
 
+## Fixes & Updates
+
+- **Fixed Multiple Bug & Deployment Issues**: Addressed `npm install` timeout / connectivity issues to allow clean dependency building using registry fallbacks and verbose logs diagnosing ENOTFOUND issues.
+- **Improved Registration Flow**: Disabled the artificial email cooldown timer that was preventing users from immediately registering and logging in during local testing/demonstrations.
+- **Fixed Team Duplication Bug**: Updated the dashboard pages (`DashboardHome`, `TeamPage`, `SubmissionPage`, `ProblemStatements`, `Announcements`) so `ensureTeamForUser()` is only called for users with the `leader` role. This prevents duplicate/stray ghost teams from being generated in the database when `member` role users navigate through the dashboard. 
+- **Enhanced Team Roster UI**: Added visual "Leader" and "Member" indicator badges within the Team Members roster to clearly distinguish the team owner from participants. The dashboard summary also safely parses and lists the actual member names instead of just a numeric count. 
+- **Disabled Supabase Email Confirmation**: It's highly recommended to disable the Supabase setting "Confirm email" inside Auth -> Providers -> Email during development to bypass Error 429 (Too Many Requests) when performing rapid multi-user testing.
+
 ## Status
 
 The application is currently in an active build-out phase, with the core marketing, auth, and dashboard foundations in place and connected to Supabase.

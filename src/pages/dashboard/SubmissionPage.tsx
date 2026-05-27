@@ -37,7 +37,7 @@ export default function SubmissionPage() {
           ? await getTeamById(baseTeamId)
           : await getTeamByLeaderId(user.id);
 
-        if (!teamResult.data && role !== "admin") {
+        if (!teamResult.data && role === "leader") {
           await ensureTeamForUser(user, profile?.team_name);
           teamResult = await getTeamByLeaderId(user.id);
         }
