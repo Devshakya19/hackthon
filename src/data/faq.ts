@@ -1,1 +1,1 @@
-export const faq = []
+export const faq = [];

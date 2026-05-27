@@ -1,1 +1,3 @@
-export default function MemberCard(){return null}
+export default function MemberCard() {
+  return null;
+}

@@ -1,1 +1,3 @@
-export default function JudgeCard(){return null}
+export default function JudgeCard() {
+  return null;
+}

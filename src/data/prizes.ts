@@ -1,1 +1,1 @@
-export const prizes = []
+export const prizes = [];

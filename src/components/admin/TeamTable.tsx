@@ -1,1 +1,3 @@
-export default function TeamTable(){return null}
+export default function TeamTable() {
+  return null;
+}

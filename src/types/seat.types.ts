@@ -1,1 +1,1 @@
-export type Seat = { id: string }
+export type Seat = { id: string };

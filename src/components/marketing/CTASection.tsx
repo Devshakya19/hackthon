@@ -1,1 +1,3 @@
-export default function CTASection(){return null}
+export default function CTASection() {
+  return null;
+}

@@ -1,1 +1,3 @@
-export default function SeatCard(){return null}
+export default function SeatCard() {
+  return null;
+}

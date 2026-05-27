@@ -1,1 +1,1 @@
-export type Admin = { id: string }
+export type Admin = { id: string };

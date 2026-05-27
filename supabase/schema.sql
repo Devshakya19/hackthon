@@ -75,9 +75,6 @@ create table if not exists public.teams (
   leader_id uuid not null,
   team_uid text,
   team_password text,
-  hidden_code text,
-  hidden_location text,
-  is_problem_unlocked boolean not null default false,
   selected_problem_id uuid,
   room_id uuid,
   seat_number text,
@@ -93,7 +90,6 @@ create table if not exists public.users (
   role public.user_role not null default 'member',
   team_name text,
   team_id uuid,
-  hidden_code text,
   seat_id text,
   selected_problem text,
   created_at timestamptz not null default now(),
@@ -209,7 +205,6 @@ alter table public.submissions
   references public.teams (id)
   on delete cascade;
 
-create unique index if not exists teams_hidden_code_key on public.teams (hidden_code);
 create unique index if not exists teams_team_uid_key on public.teams (team_uid);
 create unique index if not exists team_members_user_id_key on public.team_members (user_id);
 
@@ -282,7 +277,6 @@ declare
   next_role text := coalesce(nullif(raw_metadata ->> 'role', ''), 'member');
   next_team_id uuid := nullif(raw_metadata ->> 'team_id', '')::uuid;
   next_team_name text := coalesce(nullif(raw_metadata ->> 'team_name', ''), '');
-  next_hidden_code text := nullif(raw_metadata ->> 'hidden_code', '');
   next_seat_id text := nullif(raw_metadata ->> 'seat_id', '');
   next_selected_problem text := nullif(raw_metadata ->> 'selected_problem', '');
 begin
@@ -293,7 +287,6 @@ begin
     role,
     team_name,
     team_id,
-    hidden_code,
     seat_id,
     selected_problem
   ) values (
@@ -306,7 +299,6 @@ begin
     end,
     next_team_name,
     next_team_id,
-    next_hidden_code,
     next_seat_id,
     next_selected_problem
   )

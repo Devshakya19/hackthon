@@ -1,1 +1,3 @@
-export default function Loader(){return null}
+export default function Loader() {
+  return null;
+}

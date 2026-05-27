@@ -1,1 +1,3 @@
-export default function TimelineSection(){return null}
+export default function TimelineSection() {
+  return null;
+}

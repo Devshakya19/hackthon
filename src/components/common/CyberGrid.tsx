@@ -1,1 +1,3 @@
-export default function CyberGrid(){return null}
+export default function CyberGrid() {
+  return null;
+}

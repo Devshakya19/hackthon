@@ -1,1 +1,3 @@
-export default function Badge(){return null}
+export default function Badge() {
+  return null;
+}

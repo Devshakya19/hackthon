@@ -1,1 +1,3 @@
-export default function TeamCard(){return null}
+export default function TeamCard() {
+  return null;
+}

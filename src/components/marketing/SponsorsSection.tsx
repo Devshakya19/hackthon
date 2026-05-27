@@ -1,1 +1,3 @@
-export default function SponsorsSection(){return null}
+export default function SponsorsSection() {
+  return null;
+}

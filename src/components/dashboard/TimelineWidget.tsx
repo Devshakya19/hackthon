@@ -1,1 +1,3 @@
-export default function TimelineWidget(){return null}
+export default function TimelineWidget() {
+  return null;
+}

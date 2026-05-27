@@ -1,1 +1,3 @@
-export default function HeroSection(){return null}
+export default function HeroSection() {
+  return null;
+}

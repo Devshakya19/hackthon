@@ -1,1 +1,3 @@
-export default function ProfilePage(){return null}
+export default function ProfilePage() {
+  return null;
+}

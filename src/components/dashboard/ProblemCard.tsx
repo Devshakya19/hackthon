@@ -1,1 +1,3 @@
-export default function ProblemCard(){return null}
+export default function ProblemCard() {
+  return null;
+}

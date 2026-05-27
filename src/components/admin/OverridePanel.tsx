@@ -1,1 +1,3 @@
-export default function OverridePanel(){return null}
+export default function OverridePanel() {
+  return null;
+}

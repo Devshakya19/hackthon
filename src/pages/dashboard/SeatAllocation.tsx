@@ -1,1 +1,3 @@
-export default function SeatAllocation(){return null}
+export default function SeatAllocation() {
+  return null;
+}

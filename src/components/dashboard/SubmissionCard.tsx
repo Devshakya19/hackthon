@@ -1,1 +1,3 @@
-export default function SubmissionCard(){return null}
+export default function SubmissionCard() {
+  return null;
+}

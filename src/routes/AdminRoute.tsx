@@ -1,2 +1,4 @@
 // AdminRoute placeholder
-export default function AdminRoute(){return null}
+export default function AdminRoute() {
+  return null;
+}

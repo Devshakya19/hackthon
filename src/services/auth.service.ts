@@ -1,1 +1,7 @@
-export { getCurrentSession, signInWithEmail, signOutUser, signUpWithEmail, syncProfileFromAuth } from '../supabase/auth'
+export {
+  getCurrentSession,
+  signInWithEmail,
+  signOutUser,
+  signUpWithEmail,
+  syncProfileFromAuth,
+} from "../supabase/auth";

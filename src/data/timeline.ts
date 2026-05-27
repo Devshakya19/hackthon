@@ -1,1 +1,1 @@
-export const timeline = []
+export const timeline = [];

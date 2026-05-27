@@ -1,1 +1,3 @@
-export default function Input(){return null}
+export default function Input() {
+  return null;
+}

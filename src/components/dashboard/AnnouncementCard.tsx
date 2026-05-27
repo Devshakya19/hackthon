@@ -1,1 +1,3 @@
-export default function AnnouncementCard(){return null}
+export default function AnnouncementCard() {
+  return null;
+}

@@ -1,1 +1,3 @@
-export default function PrizeSection(){return null}
+export default function PrizeSection() {
+  return null;
+}

@@ -1,1 +1,1 @@
-export type Announcement = { id: string }
+export type Announcement = { id: string };

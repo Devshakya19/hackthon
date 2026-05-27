@@ -1,1 +1,3 @@
-export default function SectionHeading(){return null}
+export default function SectionHeading() {
+  return null;
+}

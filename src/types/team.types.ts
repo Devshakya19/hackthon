@@ -1,1 +1,1 @@
-export type Team = { id: string }
+export type Team = { id: string };

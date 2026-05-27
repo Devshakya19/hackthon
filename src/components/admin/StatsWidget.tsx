@@ -1,1 +1,3 @@
-export default function StatsWidget(){return null}
+export default function StatsWidget() {
+  return null;
+}

@@ -1,1 +1,3 @@
-export default function FAQSection(){return null}
+export default function FAQSection() {
+  return null;
+}

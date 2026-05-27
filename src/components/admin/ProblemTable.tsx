@@ -1,1 +1,3 @@
-export default function ProblemTable(){return null}
+export default function ProblemTable() {
+  return null;
+}
