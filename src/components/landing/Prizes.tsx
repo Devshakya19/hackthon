@@ -49,13 +49,13 @@ function TiltCard({ title, amount, desc, icon: Icon, color, delay }: any) {
       >
         <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} style={{ transform: "translateZ(-10px)" }} />
         
-        <motion.div style={{ transform: "translateZ(60px)" }} className="mb-6 w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500">
+        <div style={{ transform: "translate3d(0, 0, 60px)" }} className="mb-6 w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-500">
           <Icon className="w-12 h-12 text-white" />
-        </motion.div>
+        </div>
         
-        <motion.h3 style={{ transform: "translateZ(40px)" }} className="text-2xl font-bold font-display text-text-500 mb-2 uppercase tracking-widest">{title}</motion.h3>
-        <motion.div style={{ transform: "translateZ(50px)" }} className="text-5xl font-black font-display text-white mb-4 tracking-tighter">{amount}</motion.div>
-        <motion.p style={{ transform: "translateZ(30px)" }} className="text-sm text-text-500 max-w-[200px]">{desc}</motion.p>
+        <h3 style={{ transform: "translate3d(0, 0, 40px)" }} className="text-2xl font-bold font-display text-text-500 mb-2 uppercase tracking-widest">{title}</h3>
+        <div style={{ transform: "translate3d(0, 0, 50px)" }} className="text-5xl font-black font-display text-white mb-4 tracking-tighter">{amount}</div>
+        <p style={{ transform: "translate3d(0, 0, 30px)" }} className="text-sm text-text-500 max-w-[200px]">{desc}</p>
       </motion.div>
     </motion.div>
   );

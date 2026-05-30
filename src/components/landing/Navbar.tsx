@@ -70,8 +70,14 @@ export default function Navbar() {
 
   return (
     <header className="fixed w-full z-50 top-0 left-0 right-0 px-4 sm:px-6 lg:px-12 transition-all duration-300">
-      <nav
-        className={`mx-auto flex items-center justify-between transition-all duration-500 border ${
+      <motion.nav
+        layout
+        transition={{
+          type: "spring",
+          stiffness: 240,
+          damping: 26,
+        }}
+        className={`mx-auto flex items-center justify-between border transition-[background-color,border-color,box-shadow,backdrop-filter] duration-500 ease-out ${
           scrolled
             ? "max-w-4xl mt-3 px-6 py-2.5 rounded-full bg-black/65 border-primary/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,240,255,0.15)]"
             : "max-w-7xl mt-5 px-8 py-4 rounded-2xl bg-white/[0.02] border-white/5 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.2)]"
@@ -181,7 +187,7 @@ export default function Navbar() {
             </svg>
           </button>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Mobile Drawer */}
       <AnimatePresence>

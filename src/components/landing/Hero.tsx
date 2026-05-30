@@ -1,12 +1,17 @@
 import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Link } from "react-router-dom";
 import ParticlesBackground from "./ParticlesBackground";
 
 export default function Hero() {
   const { scrollY } = useScroll();
-  const yText = useTransform(scrollY, [0, 500], [0, 150]);
-  const opacityText = useTransform(scrollY, [0, 400], [1, 0]);
+  const smoothScrollY = useSpring(scrollY, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+  const yText = useTransform(smoothScrollY, [0, 500], [0, 150]);
+  const opacityText = useTransform(smoothScrollY, [0, 400], [1, 0]);
 
   return (
     <section id="home" className="relative flex items-center justify-center min-h-screen py-20 overflow-hidden bg-[#050505]">

@@ -28,14 +28,20 @@ export default function Footer() {
   return (
     <footer className="relative border-t border-white/5 bg-gradient-to-b from-transparent to-[#050505] pt-20 pb-12 px-6 lg:px-24 overflow-hidden z-10">
       
-      {/* Decorative top line with a moving indicator */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent">
-        <motion.div 
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent overflow-hidden">
+        <div 
           className="absolute top-[-1px] left-0 w-20 h-[3px] bg-gradient-to-r from-primary to-neon-purple rounded-full blur-[1px]"
-          animate={{ left: ["0%", "100%"] }}
-          transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
+          style={{
+            animation: "signalPass 8s linear infinite",
+          }}
         />
       </div>
+      <style>{`
+        @keyframes signalPass {
+          0% { transform: translateX(-80px); }
+          100% { transform: translateX(100vw); }
+        }
+      `}</style>
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
         

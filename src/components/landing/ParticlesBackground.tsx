@@ -45,14 +45,18 @@ export default function ParticlesBackground() {
 
       draw() {
         if (!ctx) return;
-        ctx.fillStyle = "rgba(0, 240, 255, 0.4)";
+        
+        // Draw glow outer circle (faint)
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 240, 255, 0.12)";
+        ctx.fill();
+
+        // Draw core circle (bright)
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 240, 255, 0.6)";
         ctx.fill();
-        
-        // Glow effect
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = "rgba(0, 240, 255, 0.8)";
       }
     }
 

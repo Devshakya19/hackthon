@@ -33,18 +33,20 @@ export default function CTA() {
         <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/45 backdrop-blur-xl p-8 sm:p-12 md:p-20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] group hover:border-primary/30 transition-all duration-500">
           
           {/* Laser Scanning Line Sweep */}
-          <div 
-            className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-60 pointer-events-none z-20"
-            style={{
-              animation: "laserSweep 4s linear infinite",
-            }}
-          />
+          <div className="absolute inset-0 h-full w-full pointer-events-none overflow-hidden z-20 rounded-3xl">
+            <div 
+              className="absolute left-0 right-0 h-full bottom-full border-b-[2px] border-primary/50 shadow-[0_4px_12px_rgba(0,240,255,0.3)]"
+              style={{
+                animation: "laserSweep 5s linear infinite",
+              }}
+            />
+          </div>
           <style>{`
             @keyframes laserSweep {
-              0% { top: 0%; opacity: 0; }
-              5% { opacity: 0.8; }
-              95% { opacity: 0.8; }
-              100% { top: 100%; opacity: 0; }
+              0% { transform: translateY(0); opacity: 0; }
+              5% { opacity: 1; }
+              95% { opacity: 1; }
+              100% { transform: translateY(100%); opacity: 0; }
             }
           `}</style>
 
