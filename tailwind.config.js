@@ -5,17 +5,17 @@ module.exports = {
 			colors: {
 				primary: '#00f0ff',
 				indigo: '#4f46e5',
-				bg: '#0a0a0a',
-				'bg-soft': '#121212',
+				bg: '#050505',
+				'bg-soft': '#0e0e0e',
 				'bg-glass': 'rgba(255, 255, 255, 0.03)',
-				'text-900': '#f3f4f6',
-				'text-500': '#9ca3af',
+				'text-900': '#ffffff',
+				'text-500': '#a1a1aa',
 				'neon-blue': '#00f0ff',
 				'neon-purple': '#bf00ff'
 			},
 			fontFamily: {
-				sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-				display: ['Outfit', 'Inter', 'Poppins']
+				sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				display: ['"Space Grotesk"', 'Outfit', 'Inter', 'sans-serif']
 			},
 			keyframes: {
 				float: {

@@ -1,184 +1,160 @@
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
+import ParticlesBackground from "./ParticlesBackground";
 
 export default function Hero() {
   const { scrollY } = useScroll();
-
-  // Parallax effects for high-end feel
-  const yText = useTransform(scrollY, [0, 500], [0, 100]);
+  const yText = useTransform(scrollY, [0, 500], [0, 150]);
   const opacityText = useTransform(scrollY, [0, 400], [1, 0]);
-  const scaleBackground = useTransform(scrollY, [0, 800], [1, 1.1]);
 
   return (
-    <section
-      id="home"
-      className="relative flex items-center justify-center min-h-screen py-20 overflow-hidden bg-bg"
-    >
-      {/* Animated SVG Cyber Grid & Circuits */}
+    <section id="home" className="relative flex items-center justify-center min-h-screen py-20 overflow-hidden bg-[#050505]">
+
+      {/* ── CSS-only animated background ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: [
+            "radial-gradient(ellipse 80% 60% at 20% 40%, rgba(0,240,255,0.06) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 80% at 80% 30%, rgba(191,0,255,0.05) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 50% at 50% 80%, rgba(79,70,229,0.04) 0%, transparent 70%)",
+          ].join(", "),
+          animation: "heroPulse 12s ease-in-out infinite alternate",
+        }}
+      />
+      <style>{`
+        @keyframes heroPulse {
+          0%   { opacity: .7; transform: scale(1); }
+          50%  { opacity: 1;  transform: scale(1.05); }
+          100% { opacity: .8; transform: scale(1.02); }
+        }
+        @keyframes gridShift {
+          0%   { background-position: 0 0; }
+          100% { background-position: 60px 60px; }
+        }
+      `}</style>
+
+      {/* Subtle animated grid overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          backgroundImage: [
+            "repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 60px)",
+            "repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 60px)",
+          ].join(", "),
+          animation: "gridShift 30s linear infinite",
+        }}
+      />
+
+      {/* Network Particles */}
+      <ParticlesBackground />
+
+      {/* Floating gradient orbs via framer-motion */}
       <motion.div
-        style={{ scale: scaleBackground }}
-        className="absolute inset-0 z-0 pointer-events-none"
-      >
-        <svg
-          className="w-full h-full opacity-40"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <pattern
-              id="hero-grid"
-              width="60"
-              height="60"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 60 0 L 0 0 0 60"
-                fill="none"
-                stroke="rgba(0, 240, 255, 0.08)"
-                strokeWidth="1"
-              />
-              <circle cx="0" cy="0" r="1.5" fill="rgba(0, 240, 255, 0.3)" />
-            </pattern>
-            <linearGradient
-              id="circuit-grad-1"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
-              <stop offset="0%" stopColor="#00f0ff" stopOpacity="0" />
-              <stop offset="50%" stopColor="#00f0ff" stopOpacity="1" />
-              <stop offset="100%" stopColor="#bf00ff" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-
-          {/* Grid Background */}
-          <rect width="100%" height="100%" fill="url(#hero-grid)" />
-
-          {/* Animated Circuit Paths */}
-          <motion.path
-            d="M 100 200 L 300 200 L 400 300 L 800 300 L 900 400"
-            fill="none"
-            stroke="url(#circuit-grad-1)"
-            strokeWidth="2"
-            initial={{ strokeDasharray: "1000", strokeDashoffset: "1000" }}
-            animate={{ strokeDashoffset: "0" }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.path
-            d="M 1200 800 L 1000 800 L 900 700 L 500 700 L 400 600"
-            fill="none"
-            stroke="url(#circuit-grad-1)"
-            strokeWidth="2"
-            initial={{ strokeDasharray: "1000", strokeDashoffset: "-1000" }}
-            animate={{ strokeDashoffset: "0" }}
-            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-          />
-        </svg>
-
-        {/* Cybernetic glowing background shapes */}
-        <div className="absolute top-[10%] left-[-5%] w-[45vw] h-[45vw] bg-primary/10 rounded-full blur-[140px] animate-pulse pointer-events-none" />
-        <div
-          className="absolute bottom-[10%] right-[-5%] w-[45vw] h-[45vw] bg-neon-purple/10 rounded-full blur-[140px] animate-pulse pointer-events-none"
-          style={{ animationDelay: "3s" }}
-        />
-      </motion.div>
+        className="absolute w-[40vw] h-[40vw] rounded-full pointer-events-none mix-blend-screen"
+        style={{
+          background: "radial-gradient(circle, rgba(0,240,255,0.12) 0%, transparent 70%)",
+          filter: "blur(80px)",
+          top: "5%",
+          left: "5%",
+        }}
+        animate={{ x: [0, 40, -20, 0], y: [0, -30, 20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        aria-hidden="true"
+      />
+      <motion.div
+        className="absolute w-[35vw] h-[35vw] rounded-full pointer-events-none mix-blend-screen"
+        style={{
+          background: "radial-gradient(circle, rgba(191,0,255,0.10) 0%, transparent 70%)",
+          filter: "blur(100px)",
+          bottom: "10%",
+          right: "5%",
+        }}
+        animate={{ x: [0, -50, 30, 0], y: [0, 40, -20, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        aria-hidden="true"
+      />
+      <motion.div
+        className="absolute w-[25vw] h-[25vw] rounded-full pointer-events-none mix-blend-screen"
+        style={{
+          background: "radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)",
+          filter: "blur(90px)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+        animate={{ x: [0, 30, -30, 0], y: [0, -40, 10, 0], scale: [1, 1.15, 0.95, 1] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        aria-hidden="true"
+      />
 
       {/* Main Content Area */}
-      <div className="center-max px-6 lg:px-24 relative z-10 w-full">
-        <motion.div
-          style={{ y: yText, opacity: opacityText }}
-          className="text-center"
-        >
-          {/* Tech Badge */}
+      <div className="center-max px-6 lg:px-24 relative z-10 w-full mt-24">
+        <motion.div style={{ y: yText, opacity: opacityText }} className="max-w-5xl mx-auto text-center flex flex-col items-center">
+          
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-primary text-xs font-bold tracking-widest uppercase backdrop-blur-md shadow-[0_0_15px_rgba(0,240,255,0.1)]"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 mb-8 px-5 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-xs font-bold tracking-[0.2em] uppercase text-text-500 shadow-2xl"
           >
-            <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             Amity University Gwalior — 21 August 2026
           </motion.div>
 
-          {/* Main Title */}
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black leading-tight tracking-tight text-white select-none">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-display font-black leading-[0.9] tracking-tighter text-white select-none">
             <motion.span
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="block mb-2 font-display"
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="block mb-2 text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60"
             >
               32HR BUGBOUNTY
             </motion.span>
             <motion.span
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-gradient animate-glow inline-block font-display filter drop-shadow-[0_0_30px_rgba(0,240,255,0.2)]"
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="text-gradient block pb-4"
             >
               HACKATHON
             </motion.span>
           </h1>
 
-          {/* Description */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-8 text-lg sm:text-xl text-text-500 max-w-2xl mx-auto font-light leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="mt-6 text-base sm:text-lg md:text-xl text-text-500 max-w-2xl text-center font-normal leading-relaxed tracking-wide px-4"
           >
-            Build. Secure. Innovate. Deploy your skills in a high-stakes 32-hour
-            arena simulating real-world zero-day vulnerabilities and
-            cryptographic exploits.
+            Build. Secure. Innovate. Deploy your skills in a high-stakes 32-hour arena simulating real-world zero-day vulnerabilities.
           </motion.p>
 
-          {/* Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6"
+            transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4 w-full sm:w-auto"
           >
             <Link
               to="/register"
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-bg font-extrabold text-lg hover:shadow-[0_0_35px_rgba(0,240,255,0.5)] hover:scale-105 transition-all duration-300 transform text-center"
+              className="w-full sm:w-auto px-10 py-4 rounded-xl bg-white text-black font-extrabold text-lg tracking-wide hover:scale-105 transition-transform duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)]"
             >
               Register Team
             </Link>
             <a
               href="#about"
-              className="w-full sm:w-auto px-8 py-4 rounded-xl glass text-white font-semibold text-lg hover:bg-white/10 transition-all duration-300 text-center"
+              className="w-full sm:w-auto px-10 py-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md text-white font-semibold text-lg tracking-wide hover:bg-white/10 transition-colors duration-300"
             >
               Explore Console
             </a>
           </motion.div>
+
         </motion.div>
       </div>
-
-      {/* Animated Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 cursor-pointer"
-        onClick={() =>
-          document
-            .getElementById("tracks")
-            ?.scrollIntoView({ behavior: "smooth" })
-        }
-      >
-        <span className="text-xs uppercase tracking-widest text-text-500 font-bold">
-          Scroll Console
-        </span>
-        <div className="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center p-1.5">
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-1.5 h-1.5 rounded-full bg-primary"
-          />
-        </div>
-      </motion.div>
     </section>
   );
 }

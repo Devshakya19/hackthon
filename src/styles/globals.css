@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Cyber-Executive Dark Theme */
+/* Cyber-Executive Dark Theme — Unified #050505 */
 :root {
   --primary: #00f0ff;
   --indigo: #4f46e5;
-  --bg: #0a0a0a;
-  --bg-soft: #121212;
+  --bg: #050505;
+  --bg-soft: #050505;
   --text-900: #f3f4f6;
   --text-500: #9ca3af;
 }
@@ -20,7 +20,7 @@ body,
 }
 body {
   background: var(--bg);
-  font-family: Inter, ui-sans-serif, system-ui;
+  font-family: 'Inter', 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   color: var(--text-900);
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -63,7 +63,7 @@ body {
   color: var(--primary);
 }
 .center-max {
-  max-width: 1200px;
+  max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -74,6 +74,18 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Section divider — thin gradient line */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 240, 255, 0.2) 50%,
+    transparent 100%
+  );
 }
 
 @keyframes float {
@@ -89,36 +101,6 @@ body {
 }
 .motion-safe\:animate-float {
   animation: float 6s ease-in-out infinite;
-}
-
-/* Sponsor grid */
-.sponsor-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 1.5rem;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
-}
-.sponsor-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(0, 240, 255, 0.4);
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
-}
-
-/* Reveal helpers */
-.reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: none;
 }
 
 /* Responsive */

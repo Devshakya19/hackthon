@@ -2,48 +2,38 @@ import React from "react";
 import { motion } from "framer-motion";
 
 const sponsors = [
-  "Google",
-  "Microsoft",
-  "IBM",
-  "Infosys",
-  "TCS",
-  "GitHub",
-  "MongoDB",
-  "Vercel",
-  "Supabase",
-  "NVIDIA",
+  { name: "Google Security", color: "from-blue-500 to-green-500" },
+  { name: "Offensive Security", color: "from-gray-700 to-gray-900" },
+  { name: "HackerOne", color: "from-gray-100 to-white" },
+  { name: "Bugcrowd", color: "from-orange-500 to-red-500" },
+  { name: "CrowdStrike", color: "from-red-600 to-red-800" },
+  { name: "Amity IT Dept", color: "from-yellow-400 to-yellow-600" },
 ];
 
 export default function Sponsors() {
   return (
-    <section id="sponsors" className="py-20 relative z-10 bg-bg">
-      <div className="center-max px-6">
-        <div className="text-center mb-16">
-          <h3 className="text-sm uppercase tracking-widest text-primary font-semibold mb-2">
-            Sponsors
-          </h3>
-          <h2 className="text-4xl md:text-5xl font-bold text-text-900 drop-shadow-md">
-            Supported By Industry Leaders
-          </h2>
-        </div>
+    <div id="sponsors" className="w-full py-24 overflow-hidden relative">
+      {/* Edge Gradients for fade effect */}
+      <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10" />
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
-          {sponsors.map((s, idx) => (
-            <motion.div
-              key={s}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.05 }}
-              className="sponsor-card"
-            >
-              <div className="text-xl font-bold text-white tracking-wide opacity-80 group-hover:opacity-100">
-                {s}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+      <div className="text-center mb-12">
+        <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-text-500">Supported by Industry Leaders</h3>
       </div>
-    </section>
+
+      <div className="flex w-[200%] animate-marquee hover:[animation-play-state:paused]">
+        {/* We map twice to create the seamless infinite loop */}
+        {[...sponsors, ...sponsors].map((s, i) => (
+          <div 
+            key={i} 
+            className="flex-1 flex justify-center items-center px-12 group cursor-pointer"
+          >
+            <div className={`text-2xl md:text-3xl font-display font-black text-transparent bg-clip-text bg-gradient-to-br ${s.color} opacity-40 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500`}>
+              {s.name}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

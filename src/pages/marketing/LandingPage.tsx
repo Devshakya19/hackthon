@@ -12,28 +12,32 @@ import Footer from "../../components/landing/Footer";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen text-text-900 bg-bg font-sans selection:bg-primary selection:text-bg">
+    <div className="min-h-screen text-white bg-[#050505] font-sans selection:bg-primary selection:text-bg">
       <Navbar />
       <main>
         <Hero />
-        <section className="py-12 px-6 lg:px-24 bg-bg-soft">
+        <section className="px-6 lg:px-24">
           <Countdown />
         </section>
-        <section className="py-20 px-6 lg:px-24 bg-bg relative overflow-hidden">
-          {/* Decorative background glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="section-divider" />
+        <section className="px-6 lg:px-24">
           <Features />
         </section>
-        <section className="py-20 px-6 lg:px-24 bg-bg-soft">
+        <div className="section-divider" />
+        <section className="px-6 lg:px-24">
           <TimelineSection />
         </section>
+        <div className="section-divider" />
         <Sponsors />
-        <section className="py-20 px-6 lg:px-24 bg-bg-soft relative overflow-hidden">
+        <div className="section-divider" />
+        <section className="px-6 lg:px-24">
           <Prizes />
         </section>
-        <section className="py-20 px-6 lg:px-24 bg-bg">
+        <div className="section-divider" />
+        <section className="px-6 lg:px-24">
           <FAQ />
         </section>
+        <div className="section-divider" />
         <CTA />
         <Footer />
       </main>
