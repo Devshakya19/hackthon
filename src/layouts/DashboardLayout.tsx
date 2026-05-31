@@ -22,9 +22,19 @@ export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const { profile, role, signOut } = useAuth();
-  const displayName = profile?.email
+  const displayName = profile?.name 
+    ? profile.name 
+    : profile?.email
     ? profile.email.split("@")[0]
-    : "Aman Leader";
+    : "User";
+    
+  const displayInitials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+    
   const displayRole = role ? role.toUpperCase() : "STUDENT";
   const navItems: Array<{ id: string; label: string; icon: IconType }> = [
     { id: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -231,7 +241,7 @@ export default function DashboardLayout() {
             className:
               "h-9 w-9 rounded-xl bg-primary/15 text-center text-sm font-bold leading-9 text-primary",
           },
-          "AL"
+          displayInitials
         ),
         el(
           "div",
@@ -244,7 +254,7 @@ export default function DashboardLayout() {
           el(
             "div",
             { className: "text-xs text-text-500" },
-            profile?.team_name || "Team Alpha"
+            profile?.team_name || "No Team"
           )
         )
       ),

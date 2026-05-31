@@ -74,7 +74,7 @@ export default function Prizes() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         <TiltCard 
           title="Runner Up" 
-          amount="₹50,000" 
+          amount="₹30,000" 
           desc="For high-impact bugs and advanced exploits." 
           icon={Medal} 
           color="from-blue-500 to-cyan-500" 
@@ -82,7 +82,7 @@ export default function Prizes() {
         />
         <TiltCard 
           title="Grand Prize" 
-          amount="₹1,00,000" 
+          amount="₹44,000" 
           desc="Awarded to the ultimate Zero-Day discovery." 
           icon={Trophy} 
           color="from-yellow-400 to-orange-500" 
@@ -90,7 +90,7 @@ export default function Prizes() {
         />
         <TiltCard 
           title="Third Place" 
-          amount="₹25,000" 
+          amount="₹23,000" 
           desc="For creative payloads and persistence mechanisms." 
           icon={Award} 
           color="from-purple-500 to-pink-500" 

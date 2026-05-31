@@ -105,6 +105,7 @@ export default function TeamPage() {
 
   async function addMember() {
     if (!team?.id) return setMessage("Team not found.");
+    if (team.is_complete) return setMessage("Team is complete. Cannot add members.");
     if (!newMember.name.trim()) return setMessage("Member name is required.");
     const row: TeamMemberRow = {
       id: crypto.randomUUID(),
@@ -120,6 +121,7 @@ export default function TeamPage() {
   }
 
   async function saveMember(memberId: string) {
+    if (team?.is_complete) return setMessage("Team is complete. Cannot edit members.");
     const { error } = await updateTeamMember(memberId, {
       name: editingMember.name.trim(),
       email: editingMember.email.trim(),
@@ -136,10 +138,32 @@ export default function TeamPage() {
   }
 
   async function deleteMember(memberId: string) {
+    if (team?.is_complete) return setMessage("Team is complete. Cannot remove members.");
     const { error } = await removeTeamMember(memberId);
     if (error) return setMessage(error.message);
     setMembers((current) => current.filter((member) => member.id !== memberId));
     setMessage("Member removed.");
+  }
+
+  async function markTeamComplete() {
+    if (!team?.id) return setMessage("Team not found.");
+    if (team.is_complete) return setMessage("Team is already marked as complete.");
+
+    // Check if all members are active (user_id is not null)
+    const inactiveMembers = members.filter(m => !m.user_id);
+    if (inactiveMembers.length > 0) {
+      return setMessage("Your members are not active. They must log in to the platform first.");
+    }
+
+    const { error } = await updateTeam(team.id, { is_complete: true });
+    if (error) return setMessage(error.message);
+
+    setTeam(current => current ? { ...current, is_complete: true } : current);
+    setMessage("Team marked as complete. Hidden code is now revealed to members.");
+    
+    if (team.hidden_code) {
+      localStorage.setItem('hackathon_secret_key', team.hidden_code);
+    }
   }
 
   if (loading) {
@@ -168,50 +192,72 @@ export default function TeamPage() {
 
       {role === "leader" ? (
         <>
-          <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">
-            <input
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-900 outline-none"
-              placeholder="Team name"
-            />
-            <button
-              onClick={saveTeamName}
-              className="rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-bg"
-            >
-              Save team name
-            </button>
-          </div>
+          {!team?.is_complete ? (
+            <>
+              <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">
+                <input
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-900 outline-none"
+                  placeholder="Team name"
+                />
+                <button
+                  onClick={saveTeamName}
+                  className="rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-bg"
+                >
+                  Save team name
+                </button>
+              </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-            <input
-              value={newMember.name}
-              onChange={(e) =>
-                setNewMember((current) => ({
-                  ...current,
-                  name: e.target.value,
-                }))
-              }
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-900 outline-none"
-              placeholder="Member name"
-            />
-            <input
-              value={newMember.email}
-              onChange={(e) =>
-                setNewMember((current) => ({
-                  ...current,
-                  email: e.target.value,
-                }))
-              }
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-900 outline-none"
-              placeholder="Member email"
-            />
+              <div className="mt-6 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+                <input
+                  value={newMember.name}
+                  onChange={(e) =>
+                    setNewMember((current) => ({
+                      ...current,
+                      name: e.target.value,
+                    }))
+                  }
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-900 outline-none"
+                  placeholder="Member name"
+                />
+                <input
+                  value={newMember.email}
+                  onChange={(e) =>
+                    setNewMember((current) => ({
+                      ...current,
+                      email: e.target.value,
+                    }))
+                  }
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-900 outline-none"
+                  placeholder="Member email"
+                />
+                <button
+                  onClick={addMember}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-bg"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="mt-6 rounded-2xl border border-white/10 bg-green-500/10 p-4 text-sm text-green-400">
+              Your team is complete. Member list is now locked and the hidden code is revealed to all members.
+            </div>
+          )}
+          
+          <div className="mt-4 flex justify-end">
             <button
-              onClick={addMember}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-bg"
+              onClick={markTeamComplete}
+              disabled={team?.is_complete}
+              className={`rounded-2xl px-5 py-3 text-sm font-semibold ${
+                team?.is_complete
+                  ? "bg-white/10 text-text-500 cursor-not-allowed"
+                  : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+              }`}
             >
-              <Plus className="h-4 w-4" />
-              Add
+              {team?.is_complete ? "Team is Complete" : "Mark Team as Complete"}
             </button>
           </div>
         </>
@@ -277,7 +323,7 @@ export default function TeamPage() {
                     </span>
                   )}
                 </div>
-                {role === "leader" ? (
+                {role === "leader" && !team?.is_complete ? (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => {

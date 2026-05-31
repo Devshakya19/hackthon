@@ -101,6 +101,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function handleSignOut() {
     await signOutUser();
+    
+    // Clear hackathon-specific local storage
+    localStorage.removeItem('hackathon_secret_key');
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('unlocked_')) {
+        localStorage.removeItem(key);
+      }
+    });
+
     setSession(null);
     setUser(null);
     setProfile(null);

@@ -26,6 +26,8 @@ export type TeamRow = {
   room_id: string | null;
   seat_number: string | null;
   problem_id: string | null;
+  hidden_code?: string;
+  is_complete?: boolean;
   created_at?: string;
   updated_at?: string;
 };

@@ -79,6 +79,8 @@ create table if not exists public.teams (
   room_id uuid,
   seat_number text,
   problem_id uuid,
+  hidden_code text default substr(md5(random()::text), 0, 8),
+  is_complete boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
